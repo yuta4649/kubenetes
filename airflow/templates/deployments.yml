@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+  labels:
+    app: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow
+      component: webserver
+  template:
+    metadata:
+      labels:
+        app: airflow
+        component: webserver
+    spec:
+      containers:
+      - name: airflow-webserver
+        image: <your-registry>/airflow-webserver:latest
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: POSTGRES_HOST
+          value: "<your-postgres-host>"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: airflow-postgresql-credentials
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-postgresql-credentials
+              key: password
+        - name: POSTGRES_DB
+          value: "airflow"
+        volumeMounts:
+        - name: airflow-dags
+          mountPath: /opt/airflow/dags
+      volumes:
+      - name: airflow-dags
+        configMap:
+          name: airflow-dags
