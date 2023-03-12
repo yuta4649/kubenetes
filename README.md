@@ -11,4 +11,5 @@ kubectl create secret docker-registry acr-secret \
 ## ServiceAccount 作成
 ```bash
 kubectl apply -f sa/service-account.yml
+kubectl apply -f sa/role-edit.yml
 ```
